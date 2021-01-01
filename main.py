@@ -156,8 +156,13 @@ def main(completed_titles, blacklist, stop=False):
     for title in titles_dict:
         actor_dict = {}
         driver.get(titles_dict[title])
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//a[contains(@href, 'country_of_origin')]")))
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//a[contains(@href, 'country_of_origin')]")))
+        except TimeoutException:
+            blacklist.append(title)
+            add_to_blacklist(title)
+            continue
         origin = driver.find_element_by_xpath("//a[contains(@href, 'country_of_origin')]").text
         if origin != 'USA':
             blacklist.append(title)
